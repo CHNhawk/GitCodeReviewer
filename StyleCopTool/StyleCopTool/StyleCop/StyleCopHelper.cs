@@ -26,7 +26,7 @@ namespace StyleCopTool.StyleCop
 
         public bool Test()
         {
-            //InitializeConsole();
+            //Initialize();
             string InputFilePath = "D:/Xuanyu/projects/GitCodeReviewer/StyleCopTool/StyleCopTool/Program.cs";
             Run(InputFilePath);
             bool success = Analyzer.Start(CodeProjects, true);
@@ -40,7 +40,7 @@ namespace StyleCopTool.StyleCop
             return null;
         }
 
-        private void InitializeConsole()
+        private void Initialize()
         {
             if (Analyzer != null) 
             {
