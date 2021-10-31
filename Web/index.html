@@ -1,0 +1,863 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="./layui/css/layui.css">
+    <script src="./layui/layui.all.js"></script>
+    <style>
+        .config-icon {
+            background-image: '<svg t="1630393472568" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1248" width="200" height="200"><path d="M563.168 119.616l0 83.136 25.6 6.624c28.96 7.488 56.576 19.104 82.112 34.592l22.88 13.888 59.52-59.52 72.384 72.384-60.416 60.416 13.024 22.656c14.432 25.12 25.216 52.32 32.064 80.864l6.272 26.144 87.808 0 0 102.368-89.792 0-6.912 25.024c-7.456 27.008-18.656 52.928-33.28 76.992l-13.888 22.912 65.152 65.12-72.384 72.384-66.048-66.048-22.624 13.024c-23.488 13.504-48.992 23.84-75.776 30.752l-25.6 6.592 0 94.432-102.368 0 0-94.432-25.6-6.592c-26.784-6.912-52.288-17.248-75.776-30.752l-22.656-13.024-66.048 66.048-72.384-72.384 65.152-65.12-13.888-22.912c-14.624-24.096-25.824-49.984-33.28-76.992l-6.912-25.024-89.792 0 0-102.368 87.808 0 6.272-26.144c6.816-28.512 17.632-55.744 32.064-80.864l13.024-22.656-60.416-60.416 72.384-72.384 59.52 59.52 22.88-13.888c25.536-15.488 53.152-27.136 82.112-34.592l25.6-6.624 0-83.136 102.368 0zM512 665.568c84.672 0 153.536-68.896 153.536-153.568s-68.864-153.568-153.536-153.568-153.536 68.896-153.536 153.568c0 84.672 68.864 153.568 153.536 153.568zM597.312 85.504l-170.592 0 0 90.848c-32.576 8.416-63.2 21.44-91.264 38.464l-64.704-64.704-120.608 120.64 66.08 66.08c-15.936 27.744-28 57.92-35.648 89.888l-95.04 0 0 170.592 97.92 0c8.416 30.496 20.96 59.2 36.992 85.632l-70.336 70.336 120.608 120.64 71.712-71.712c26.112 15.008 54.4 26.496 84.256 34.208l0 102.112 170.592 0 0-102.112c29.856-7.712 58.144-19.2 84.256-34.208l71.712 71.712 120.608-120.64-70.336-70.336c16.032-26.432 28.576-55.136 36.992-85.632l97.92 0 0-170.592-95.04 0c-7.648-31.968-19.712-62.112-35.648-89.888l66.08-66.08-120.608-120.64-64.704 64.704c-28.064-17.024-58.688-30.048-91.264-38.464l0-90.848 0 0zM512 631.456c-65.984 0-119.424-53.472-119.424-119.456s53.44-119.424 119.424-119.424 119.424 53.472 119.424 119.424c0 65.984-53.44 119.456-119.424 119.456l0 0z" p-id="1249"></path></svg>';
+        }
+    </style>
+</head>
+<body>
+
+<blockquote class="layui-elem-quote">Gitea Assistant <t class="layui-word-aux">Git 统计工具 V0.3</t></blockquote>
+<div class="layui-tab layui-tab-brief">
+    <ul class="layui-tab-title">
+        <li class="layui-this">用户列表</li>
+        <li>仓库列表</li>
+        <li>统计配置</li>
+        <li>提交记录</li>
+        <li>数据统计</li>
+    </ul>
+    <div class="layui-tab-content">
+        <div class="layui-tab-item layui-show">
+            <table id="user_table" lay-filter="user_table"></table>
+        </div>
+        <div class="layui-tab-item layui-show">
+            <table id="repo_table" lay-filter="repo_table"></table>
+        </div>
+        <div class="layui-tab-item">
+            <label class="layui-form-label">日期范围</label>
+            <div class="layui-input-inline">
+                <input type="text" class="layui-input" id="date-range" placeholder=" - ">
+            </div>
+            <button id="start-do-main-btn" class="layui-btn layui-btn-normal layui-btn-sm" lay-event="startDoMain">开始统计</button>
+            <button id="clear-logout-btn" class="layui-btn layui-btn-normal layui-btn-sm" lay-event="startDoMain">清空日志</button>
+            <button id="save-logout-btn" class="layui-btn layui-btn-normal layui-btn-sm" lay-event="startDoMain">保存日志</button>
+            <div class="layui-row layui-col-space10">
+                <div class="layui-col-md1">
+                </div>
+                <div id="log-scroll-view" class="layui-col-md10" style="height: 600px; overflow: scroll;">
+                    <div id="logout" class="layui-text">日志输出 >>> </div>
+                </div>
+                <div class="layui-col-md1">
+                </div>
+            </div>
+        </div>
+        <div class="layui-tab-item">
+            <table id="data_table"></table>
+        </div>
+        <div class="layui-tab-item">
+            <table id="score_table"></table>
+        </div>
+    </div>
+</div>
+
+<div id="date_info" class="layui-fluid layui-text"  style="text-align: center;">
+    <div>
+        数据统计时间: 等待返回数据
+    </div>
+</div>
+<script>
+// 对Date的扩展，将 Date 转化为指定格式的String
+// 月(M)、日(d)、小时(H)、分(m)、秒(s)、季度(q) 可以用 1-2 个占位符，
+// 年(y)可以用 1-4 个占位符，毫秒(S)只能用 1 个占位符(是 1-3 位的数字)
+// 例子：
+// (new Date()).Format("yyyy-MM-dd HH:mm:ss.S") ==> 2006-07-02 08:09:04.423
+// (new Date()).Format("yyyy-M-d H:m:s.S")      ==> 2006-7-2 8:9:4.18
+Date.prototype.Format = function(fmt)
+{
+    //author: meizz
+    var o = {
+        "M+" : this.getMonth()+1,                 //月份
+        "d+" : this.getDate(),                    //日
+        "h+" : this.getHours(),                   //小时
+        "m+" : this.getMinutes(),                 //分
+        "s+" : this.getSeconds(),                 //秒
+        "q+" : Math.floor((this.getMonth()+3)/3), //季度
+        "S"  : this.getMilliseconds()             //毫秒
+    };
+    if(/(y+)/.test(fmt)) {
+        fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
+    }
+    for(var k in o)  {
+        if(new RegExp("("+ k +")").test(fmt))  {
+            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
+        }
+    }
+    return fmt;
+}
+</script>
+<script type="text/html" id="user_table_toolbar">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="getUserList">刷新用户数据</button>
+    </div>
+</script>
+<script type="text/html" id="user_enable_checkbox">
+    <!-- 是否启用该用户的统计 选择框 -->
+    <input type="checkbox" value="{{d.id}}" title="启用" lay-filter="enableUserCheck" {{ d.enable ? 'checked' : '' }}>
+</script>
+<script type="text/html" id="repo_table_toolbar">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="getRepoList">刷新仓库数据</button>
+    </div>
+</script>
+<script type="text/html" id="repo_enable_checkbox">
+    <!-- 是否启用该仓库的统计 选择框 -->
+    <input type="checkbox" value="{{d.id}}" title="启用" lay-filter="enableRepoCheck" {{ d.enable ? 'checked' : '' }}>
+</script>
+<script>
+// layui框架
+const table = layui.table;
+const form = layui.form;
+const laydate = layui.laydate;
+
+const COMMIT_SCORE = 2;         // 提交分数
+const PUBLISH_SCORE = 5;        // 发布版本分数
+
+const SIMILAR_RATE = 0.82;       // 重复度阈值
+
+// 访问令牌
+var accessToken = "a3547db5e6628fc141bea28ce58e0c1efe822e1e";   // localhost
+
+// 基本URL
+const HOST = 'localhost';
+const PORT = '3000';
+var baseUrl = `http://${HOST}:${PORT}/api/v1`;
+
+var layerIndex;         // 弹出层序号
+var userList = [];      // 用户列表
+var repoList = [];      // 仓库数据列表
+var releaseList = [];   // 发布版本列表
+
+var commitList = [];    // 提交统计列表
+var scoreList = [];     // 分数统计列表
+
+var logout = "";
+
+// 用户信息表格
+var userTableInstance = table.render({
+    elem: '#user_table',
+    cols: [[
+        //标题栏
+        {field: 'id', title: 'ID', width: 150, sort: true},
+        {field: 'account', title: '账号', width: 150, sort: true},
+        {field: 'username', title: '姓名', width: 150, sort: true},
+        {field: 'alias', title: '别名', edit: "text", sort: true},
+        {field: 'enable', title: '是否加入统计',  width: 150, templet: '#user_enable_checkbox', sort: true}
+    ]],
+    data:userList,
+    height: 600,
+    initSort: {field:'id', type:'asc'},    // 设置初始排序
+    toolbar: '#user_table_toolbar',     // 开启工具栏
+    page: true,     // 是否显示分页
+    limits: [15, 30, 60, 100, 150],
+    limit: 30       // 每页默认显示的数量
+});
+
+// 仓库信息表格
+var repoTableInstance = table.render({
+    elem: '#repo_table',
+    cols: [[
+        //标题栏
+        {field: 'id', title: 'ID', width: 150, sort: true},
+        {field: 'name', title: '仓库名', sort: true},
+        {field: 'owner', title: '所有者', width: 250, sort: true},
+        {field: 'branches', title: '分支数', width: 150, sort: true},
+        {field: 'createTime', title: '创建日期', width: 250, sort: true},
+        {field: 'updateTime', title: '更新日期', width: 250, sort: true},
+        {field: 'enable', title: '是否加入统计',  width: 150, templet: '#repo_enable_checkbox', sort: true}
+    ]],
+    data: repoList,
+    height: 600,
+    initSort: {field:'id', type:'asc'},    // 设置初始排序
+    toolbar: '#repo_table_toolbar',     // 开启工具栏
+    page: true,     // 是否显示分页
+    limits: [15, 30, 60, 100, 150],
+    limit: 30       // 每页默认显示的数量
+});
+
+// 提交记录数据表格
+var commitTableInstance = table.render({
+    elem: '#data_table',
+    cols: [[
+        //标题栏
+        {field: 'name', title: '提交者', width: 150, sort: true},
+        {field: 'repo', title: '仓库', width: 150, sort: true},
+        {field: 'branch', title: '分支', width: 150, sort: true},
+        {field: 'commit', title: '提交内容', sort: true},
+        {field: 'date', title: '提交时间', width: 180, sort: true}
+    ]],
+    //skin: 'line', // 表格风格
+    height: 600,
+    toolbar: true , // 开启工具栏
+    page: true,     // 是否显示分页
+    limits: [30, 50, 80, 100, 150],
+    limit: 50       // 每页默认显示的数量
+});
+
+// 分数统计数据表格
+var scoreTableInstance = table.render({
+    elem: '#score_table',
+    cols: [[
+        {field: 'name', title: '用户名', width :150, sort: true},
+        {field: 'commit', title: '有效提交次数', sort: true},
+        {field: 'bad', title: '无效提交次数',  sort: true},
+        {field: 'publish', title: '版本发布次数', sort: true},
+        {field: 'score', title: '总分', sort: true},
+    ]],
+    height: 600,
+    initSort: {field:'score', type:'desc'},    // 设置初始排序
+    toolbar: true , // 开启工具栏
+    page: true,     // 是否显示分页
+    limits: [30, 50, 80, 100, 150],
+    limit: 50       // 每页默认显示的数量
+});
+
+// 测试用起始时间变量
+let date = new Date();
+let y = date.getFullYear();
+let m = date.getMonth();
+var firstDay = new Date(y, m, 1).Format("yyyy-MM-dd");
+var lastDay = new Date(y, m + 1, 0).Format("yyyy-MM-dd");
+var startDate = new Date(firstDay + "T00:00:00+08:00");
+var endDate = new Date(lastDay + "T23:59:59+08:00");
+
+// 开始统计按钮
+$("#start-do-main-btn").click(() => {
+    layer.msg('开始统计');
+    doMain();
+});
+
+// 清空日志按钮
+$("#clear-logout-btn").click(() => {
+    logout = "日志输出 >>><br>";
+    $("#logout").html(logout);
+    saveLogout();
+});
+
+// 保存日志按钮
+$("#save-logout-btn").click(() => {
+    saveLogout();
+    layer.msg('日志已保存');
+});
+
+// 监听用户表格表头按钮
+table.on('toolbar(user_table)', function(obj){
+    switch(obj.event){
+        case 'getUserList':
+            getUserListAsync();
+        break;
+        case 'startDoMain':
+        break;
+    };
+});
+
+// 监听用户表格单元格编辑
+table.on('edit(user_table)', function(obj){
+    var value = obj.value;  // 得到修改后的值
+    var data = obj.data;    // 得到所在行所有键值
+    var field = obj.field;  // 得到字段
+    for(let i = 0; i < userList.length; i++){
+        if(userList[i].id == data.id){
+            // 修改当前user的启用状态
+            userList[i][field] = value;
+            console.log("enableUserCheck userList[i] >> ", userList[i]);
+            break;
+        }
+    }
+    saveStorageData();
+    layer.msg('[ID: '+ data.id +'] ' + field + ' 字段更改为：'+ value);
+});
+
+// 监听用户表格启用统计选框的操作事件
+form.on('checkbox(enableUserCheck)', function(obj){
+    for(let i = 0; i < userList.length; i++){
+        if(userList[i].id == this.value){
+            // 修改当前user的启用状态
+            userList[i].enable = obj.elem.checked;
+            console.log("enableUserCheck userList[i] >> ", userList[i]);
+            break;
+        }
+    }
+    saveUserList();
+    layer.tips(this.value + ' ' + this.name + '：'+ obj.elem.checked, obj.othis);
+});
+
+// 获取仓库列表
+table.on('toolbar(repo_table)', function(obj){
+    switch(obj.event){
+        case 'getRepoList':
+            console.log(`get repo list`)
+            getRepoListAsync();
+        break;
+    }
+});
+
+// 日期范围
+laydate.render({
+    elem: '#date-range',
+    value: firstDay + ' - ' + lastDay,
+    range: true,
+    done: function(value, date1, date2){
+        // 得到日期生成的字符串，如：2017-08-18
+        let strs = value.split(" - ");
+        if(strs.length == 2){
+            let str1 = strs[0] + "T00:00:00+08:00";
+            let str2 = strs[1] + "T23:59:59+08:00";
+            startDate = new Date(str1);
+            endDate = new Date(str2);
+            console.log("set startDate", startDate);
+            console.log("set endDate", endDate);
+        }
+    }
+});
+
+//////////////////////////////////////////
+// 其它函数
+//////////////////////////////////////////
+
+// 读取保存的用户数据
+function loadStorageData(){
+    if(window.localStorage){
+        userList = JSON.parse(window.localStorage.getItem("userList"));
+        if(userList == null){
+            userList = [];
+        }
+        commitList = JSON.parse(window.localStorage.getItem("commitList"));
+        if(commitList == null){
+            commitList = [];
+        }
+        scoreList = JSON.parse(window.localStorage.getItem("scoreList"));
+        if(scoreList == null){
+            scoreList = [];
+        }
+        userTableInstance.reload({data: userList});
+        commitTableInstance.reload({data: commitList});
+        scoreTableInstance.reload({data: scoreList});
+
+        logout = window.localStorage.getItem("logout");
+        if(logout == null){
+            logout = "日志输出 >>><br>";
+        }
+        $("#logout").html(logout);
+
+    } else {
+        showBrowserHint();
+    }
+}
+
+// 存储用户数据
+function saveUserList(){
+    if(window.localStorage){
+        window.localStorage.setItem("userList", JSON.stringify(userList));
+    } else {
+        showBrowserHint();
+    }
+}
+
+// 存储提交统计数据
+function saveCommitList(){
+    if(window.localStorage){
+        window.localStorage.setItem("commitList", JSON.stringify(commitList));
+    } else {
+        showBrowserHint();
+    }
+}
+
+// 存储分数统计数据
+function saveScoreList(){
+    if(window.localStorage){
+        window.localStorage.setItem("scoreList", JSON.stringify(scoreList));
+    } else {
+        showBrowserHint();
+    }
+}
+
+// 存储日志记录
+function saveLogout(){
+    if(window.localStorage){
+        window.localStorage.setItem("logout", logout);
+    } else {
+        showBrowserHint();
+    }
+}
+
+// 下载 Chrome 浏览器提示
+function showBrowserHint(){
+    layer.open({
+        type: 1,
+        skin: 'layui-layer-rim',    // 加上边框
+        area: ['420px', '160px'],   // 宽高
+        content: '<div class="layui-fluid layui-text" style="text-align: center;">您的浏览器不支持本地存储，无法正常使用该页面的部分功能，建议下载谷歌Chrome浏览器以获得完整体验<a href="https://www.google.cn/chrome/" target="_blank" class="layui-btn">转到 Chrome 下载页</a></div>'
+    });
+}
+
+// 主动获取用户列表
+async function getUserListAsync(){
+    await getUserList();
+    userTableInstance.reload({data: userList});
+    saveUserList();
+    log("已更新用户 " + userList.length + " 条");
+}
+
+// 主动获取仓库列表
+async function getRepoListAsync(){
+    await getRepoList();
+    repoTableInstance.reload({data: repoList});
+    saveRepoList();
+    log("已更新仓库 " + repoList.length + " 项");
+}
+
+// 主要流程
+// 获取仓库列表 >> 获取仓库分支 >> 获取每个分支的提交 >> 按照提交者进行统计
+async function doMain(){
+
+    let startTime = new Date();
+    log("开始统计");
+    console.log("start process");
+    $("#start-do-main-btn").html("正在统计 请稍后...");
+    $("#start-do-main-btn").addClass("layui-btn-disabled").attr("disabled",true);
+
+    log("正在获取仓库列表");
+    // 获取仓库列表
+    await getRepoList();
+    log("获取到共 [" + repoList.length + "] 个仓库");
+
+    log("正在获取各仓库的分支列表");
+
+    // 获取每个仓库的分支列表
+    for(let i = 0; i < repoList.length; i ++) {
+        let repo = await getBranchList(repoList[i]);
+        log("仓库 [" + repo.name + "] 共有分支 " + repo.branches.length + " 项");
+        repoList[i] = repo;
+    }
+    log("正在获取各仓库的分支的提交记录");
+
+    // 遍历所有仓库 获取提交记录
+    for(let i = 0; i < repoList.length; i ++) {
+        let commitList = [];
+        // 遍历仓库的分支
+        for(let j = 0; j < repoList[i].branches.length; j ++) {
+            // 根据分支获取每个仓库的提交记录
+            let page = 1;
+            let tryNextPage = true; // 尝试下一页，如果本页数量为0则停止
+            while(tryNextPage){
+                try{
+                    let commits = await getCommitListFromBranch(repoList[i], repoList[i].branches[j], page);
+                    if(commits.length > 0){
+                        commitList = commitList.concat(commits);
+                    } else {
+                        tryNextPage = false;
+                    }
+                    page ++;
+                }catch(e){
+                    console.log("error >>", e);
+                }
+            }
+        }
+        repoList[i].commits = commitList;
+        log("仓库 [" + repoList[i].name + "] 共有提交记录 " + commitList.length + " 项");
+        console.log("仓库 [" + repoList[i].name + "] 提交记录：", commitList);
+    }
+
+    log("正在获取各仓库的版本发布数据");
+
+    // 遍历所有仓库 获取版本发布数据
+    releaseList = [];
+    for(let i = 0; i < repoList.length; i ++) {
+        let releases = await getRepoReleaseList(repoList[i]);
+        releaseList = releaseList.concat(releases);
+        // console.log("版本发布数据",releases);
+    }
+
+    log("正在加载表格");
+
+    // 加载提交数据表格
+    initCommitTable();
+
+    log("正在统计用户分数");
+
+    // 加载用户统计表格
+    initScoreTable();
+
+    // 计算耗时
+
+    let spendTime = (new Date().getTime() - startTime.getTime()) / 1000;
+    console.log("统计耗时 >> " + spendTime + " s");
+
+    log("统计结束 耗时 " + spendTime + " s");
+
+    // 设置数据统计时间
+    let dateString = "数据统计时间: " + startDate.Format("yyyy-MM-dd hh:mm:ss") + " - " + endDate.Format("yyyy-MM-dd hh:mm:ss") + "  统计耗时: " + spendTime + "s";
+    $("#date_info").html(dateString);
+
+    $("#start-do-main-btn").html("开始统计分数");
+    $("#start-do-main-btn").removeClass("layui-btn-disabled").attr("disabled",false);
+
+}
+
+// 加载提交数据表格
+function initCommitTable(){
+    commitList = [];
+    // 遍历仓库的提交
+    for(let i = 0; i < repoList.length; i ++) {
+        repoList[i].commits.forEach(element => {
+            let data = {
+                name: element.author,
+                repo:  repoList[i].name,
+                branch: element.branch,
+                commit: element.message,
+                date: element.commitDate
+            };
+            commitList.push(data);
+        });
+    }
+    saveCommitList();
+    commitTableInstance.reload({data: commitList});
+}
+
+// 加载分数统计表格
+function initScoreTable(){
+    scoreList = []; // 用户统计列表
+
+    let dealCommitDataList = dealCommitData(commitList);        // 处理提交数据，去除重复与合并项
+
+    userList.forEach(data => {
+        if(data.enable){
+            let user = {
+                name: data.username,
+                code: data.username + ',' + data.account + ',' + data.alias,   // 比对用户名
+                commit: 0,
+                bad: 0,
+                publish: 0,
+                score: 0
+            };
+            scoreList.push(user);
+        }
+    });
+
+    // 遍历提交数据
+    dealCommitDataList.forEach(data => {
+        for(let i  = 0; i < scoreList.length; i ++ ){
+            let user = scoreList[i];
+            if(user.code.indexOf(data.name) > 0) {
+                // 判断提交格式
+                if(data.commit.indexOf('[') != 0 && data.commit.length < 10){
+                    let message = "用户 [" + user.name + "] 提交内容 {" + data.commit + "} 格式不规范";
+                    log(message);
+                    user.bad ++;
+                } else if (data.commit.indexOf("Merge") != 0 && data.commit.indexOf("Revert") != 0){
+                    user.commit ++;
+                    user.score += COMMIT_SCORE;
+                }
+                break;
+            }
+        }
+    });
+
+    // 遍历版本发布数据
+    releaseList.forEach(data => {
+        for(let i  = 0; i < scoreList.length; i ++ ){
+            let user = scoreList[i];
+            if(user.code.indexOf(data.username) > 0) {
+                user.publish ++;
+                user.score += PUBLISH_SCORE;
+                let message = "用户 [" + user.name + "] 在仓库 [" + data.repo.name + "] 发布版本 [" + data.tag + "] >> 已统计 " + user.publish + "次";
+                log(message);
+                break;
+            }
+        }
+    });
+
+    saveScoreList();
+    scoreTableInstance.reload({data: scoreList});
+}
+
+// 处理提交数据，去除重复提交与分支合并信息，并且去除重复度高于阈值的提交
+function dealCommitData(commitData){
+    let list = [];
+    commitData.forEach(data => {
+        if(data.commit.indexOf("Merge") != 0) {
+            // 不是分支合并信息
+            let hasCommit = false;
+            // 判断重复
+            for(let i = 0;i < list.length; i++) {
+                if(list[i].commit === data.commit) {
+                    hasCommit = true;
+                    break;
+                }
+                let similar_rate = similar(list[i].commit, data.commit);
+                if(similar_rate > SIMILAR_RATE) {
+                    let message = "用户 [" + data.name + "] 仓库 [" + data.repo + "] {" + list[i].commit + "} 与 {" + data.commit + "} 相似度为 [<font color='red'>" + similar_rate + "</font>] 已超过阈值 " + SIMILAR_RATE;
+                    console.log("similar", message);
+                    log(message);
+                    hasCommit = true;
+                    break;
+                }
+            }
+            if(!hasCommit) {
+                list.push(data);
+            }
+        }
+    });
+    return list;
+}
+
+// 获取用户列表
+function getUserList(){
+    let api = "/admin/users";
+    let url = baseUrl + api;
+    let data = "access_token=" + accessToken;
+    return new Promise((resolve, reject) => {
+        $.get(
+            url + "?" + data,
+            function(response, status){
+                response.forEach(element => {
+                    let hasUser = false;
+                    for(let i = 0; i< userList.length; i++){
+                        if(userList[i].id === element.id){
+                            hasUser = true;
+                        }
+                    }
+                    if(!hasUser){
+                        let user =
+                        {
+                            id : element.id,
+                            account : element.username,
+                            username : element.full_name,
+                            alias: "",
+                            enable: true
+                        }
+                        userList.push(user);
+                    }
+                });
+                //console.log(userList);
+                resolve(true);
+            }
+        );
+    });
+}
+
+// 获取仓库列表
+function getRepoList(){
+    let api = "/repos/search";
+    let url = baseUrl + api;
+    let data = "access_token=" + accessToken + "&template=false&page=1&limit=50&sort=updated&order=desc";
+    repoList = [];
+    //let data = "access_token=" + accessToken + "&private=false&template=false&page=1&limit=50&sort=updated&order=desc";
+    return new Promise((resolve, reject) => {
+        $.get(
+            url + "?" + data,
+            function(response, status){
+                response.data.forEach(element => {
+                    let owner = element.owner;
+                    let repo =
+                    {
+                        id : element.id,
+                        name : element.name,
+                        userId : owner.username,
+                        userName : owner.full_name,
+                        update : new Date(element.updated_at),
+                        branches : [],
+                        commits : []
+                    }
+                    // 判断仓库最新更新日期是否在选择的日期之后
+                    // 满足要求的仓库才添加到列表进行统计
+                    if(startDate <= repo.update){
+                        repoList.push(repo);
+                    } else {
+                        resolve(true);
+                    }
+                });
+                resolve(true);
+            }
+        );
+    });
+}
+
+// 获取仓库分支
+function getBranchList(repo){
+    if(repo === undefined){
+        return;
+    }
+    let api = "/repos/" + repo.userId + "/" + repo.name + "/branches";
+    let url = baseUrl + api;
+    let data = "access_token=" + accessToken;
+    return new Promise((resolve, reject) => {
+        $.get(
+            url + "?" + data,
+            function(response, status){
+                let brunchList = [];
+                response.forEach(element => {
+                    // repo.branches.push(element.name);
+                    repo.branches.push(element.commit.id);
+                    // console.log(element.name);
+                    // console.log(element.commit.id);
+                });
+                return resolve(repo);
+            }
+        );
+    });
+}
+/*Date.prototype.format = function(fmt) {
+    var o = {
+        "M+" : this.getMonth()+1,                 //月份
+        "d+" : this.getDate(),                    //日
+        "h+" : this.getHours(),                   //小时
+        "m+" : this.getMinutes(),                 //分
+        "s+" : this.getSeconds(),                 //秒
+        "q+" : Math.floor((this.getMonth()+3)/3), //季度
+        "S"  : this.getMilliseconds()             //毫秒
+    };
+    if(/(y+)/.test(fmt)) {
+        fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
+    }
+    for(var k in o) {
+        if(new RegExp("("+ k +")").test(fmt)){
+            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
+        }
+    }
+    return fmt;
+}*/
+
+// 获取仓库分支的提交记录
+function getCommitListFromBranch(repo, branch, page){
+    if(repo === undefined){
+        return;
+    }
+    let api = "/repos/" + repo.userId + "/" + repo.name + "/commits";
+    console.log(api);
+    let url = baseUrl + api;
+    let data = "access_token=" + accessToken
+    let getStep = 0;
+    data = data + "&sha=" + encodeURIComponent(branch) + "&page=" + page;
+    console.log("encode uri >> ", data);
+    return new Promise((resolve, reject) => {
+        $.get(
+            url + "?" + data,
+            function(response, status){
+                let commits = [];
+                if(response.length > 0){
+                    for(let i = 0; i < response.length; i ++) {
+                        let element = response[i];
+                        let commit = {
+                            message : element.commit.message,
+                            branch : branch,
+                            author : element.commit.author.name,
+                            committer : element.commit.committer.name,
+                            commitDate : new Date(element.commit.committer.date)
+                        };
+                       /* var time1 = commit.commitDate.format("yyyy-MM-dd hh:mm:ss");
+                        console.log(time1);*/
+                        // 判断提交日期是否在选择的日期以内
+                        // 满足要求的提交才进行统计
+                        if(startDate <= commit.commitDate && endDate >= commit.commitDate){
+                            commit.commitDate = commit.commitDate.Format("yyyy-MM-dd hh:mm");
+                            commits.push(commit);
+                        }
+                    }
+                    log("仓库 [" + repo.name + "] 分支 [" + branch + "] 第[" + page + "]页共有提交 " + response.length + " 次  统计提交 " + commits.length + " 次");
+                }
+                resolve(commits);
+            }
+        );
+    });
+}
+
+// 获取仓库发布版本信息
+function getRepoReleaseList(repo){
+    if(repo === undefined){
+        return;
+    }
+    let api = "/repos/" + repo.userId + "/" + repo.name + "/releases";
+    let url = baseUrl + api;
+    let data = "access_token=" + accessToken;
+    return new Promise((resolve, reject) => {
+        $.get(
+            url + "?" + data,
+            function(response, status){
+                let releases = [];
+                //console.log("getRepoReleaseList (" + api + ") >> ", response);
+                for(let i = 0; i < response.length; i ++) {
+                    let element = response[i];
+                    let publishDate = new Date(element.published_at);
+                    if(startDate <= publishDate && endDate >= publishDate){
+                        releases.push({
+                            username: element.author.username,
+                            repo: repo,
+                            tag: element.tag_name
+                        });
+                    }
+                }
+                return resolve(releases);
+            }
+        );
+    });
+}
+
+///////////////////////////////////////////
+// 主流程
+///////////////////////////////////////////
+loadStorageData();  // 读取存储数据
+
+///////////////////////////////////////////
+// 其它计算工具函数
+///////////////////////////////////////////
+// 计算字符串相似度
+function similar(s, t, f) {
+    if (!s || !t) {
+        return 0
+    }
+    var l = s.length > t.length ? s.length : t.length;
+    var n = s.length;
+    var m = t.length;
+    var d = [];
+    f = f || 3;
+    var min = function(a, b, c) {
+        return a < b ? (a < c ? a : c) : (b < c ? b : c);
+    }
+    var i, j, si, tj, cost;
+    if (n === 0) {
+        return m;
+    }
+    if (m === 0) {
+        return n;
+    }
+    for (i = 0; i <= n; i++) {
+        d[i] = [];
+        d[i][0] = i;
+    }
+    for (j = 0; j <= m; j++) {
+        d[0][j] = j;
+    }
+    for (i = 1; i <= n; i++) {
+        si = s.charAt(i - 1);
+        for (j = 1; j <= m; j++) {
+            tj = t.charAt(j - 1);
+            if (si === tj) {
+                cost = 0;
+            } else {
+                cost = 1;
+            }
+            d[i][j] = min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + cost);
+        }
+    }
+    let res = (1 - d[n][m] / l);
+    return res.toFixed(f);
+}
+
+// 日志输出
+function log(message){
+    logout += new Date().Format("yyyy-MM-dd hh:mm:ss") + " >> " + message + "<br>";
+    $("#logout").html(logout);
+    var scrollView = document.getElementById('log-scroll-view');
+    scrollView.scrollTop = scrollView.scrollHeight;
+}
+
+</script>
+</body>
+</html>
